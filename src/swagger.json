@@ -1,0 +1,202 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "The service conf contains all fabric settings. On service start, the service will write all his config entries to the mongo database. Feel free to add your own fabric settings to the service.",
+    "version": "1.0.0",
+    "title": "2ndLock configuration service",
+    "termsOfService": "http://2ndLock.com",
+    "contact": {
+      "email": "jens@symlink.de"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "config",
+      "description": "Configuration"
+    },
+    {
+      "name": "heartbeat",
+      "description": "Get current heartbeat from service"
+    }
+  ],
+  "schemes": ["http"],
+  "paths": {
+    "/config": {
+      "get": {
+        "tags": ["config"],
+        "summary": "get complete list of all stored config entries",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "format": "string"
+                  }
+                }
+              },
+              "example": [
+                {
+                  "name": "value from config"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["config"],
+        "summary": "add entry to config",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "config",
+            "description": "The config to add",
+            "schema": {
+              "type": "object",
+              "required": ["key", "content"],
+              "properties": {
+                "key": {
+                  "type": "string"
+                },
+                "content": {
+                  "type": "string"
+                }
+              },
+              "example": [
+                {
+                  "key": "test",
+                  "content": "passed"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "put": {
+        "tags": ["config"],
+        "summary": "update config entry",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "config",
+            "description": "The config to add",
+            "schema": {
+              "type": "object",
+              "required": ["key", "content"],
+              "properties": {
+                "key": {
+                  "type": "string"
+                },
+                "content": {
+                  "type": "string"
+                }
+              },
+              "example": [
+                {
+                  "key": "test",
+                  "content": "passed"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["config"],
+        "summary": "delete all config entries",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/config/index": {
+      "get": {
+        "tags": ["config"],
+        "summary": "search for registered service instance",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "index",
+            "required": true,
+            "type": "string",
+            "description": "name from config entry"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "format": "string"
+                }
+              },
+              "example": [
+                {
+                  "name": "value from config"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["config"],
+        "summary": "delete registry entry by id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string",
+            "description": "id from service"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/heartbeat": {
+      "get": {
+        "tags": ["heartbeat"],
+        "summary": "get current heartbeat from service",
+        "description": "response with current service health",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  }
+}

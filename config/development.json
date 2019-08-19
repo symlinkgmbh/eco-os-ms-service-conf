@@ -1,0 +1,68 @@
+{
+  "environment": "development",
+  "version": "0.0.1",
+  "buildDate": "NOW",
+  "buildSHA": "4-8-15-16-23-42",
+  "name": "eco-os-service-config",
+  "serviceId": "002",
+  "server": {
+    "port": "8002"
+  },
+  "mongo": {
+    "db": "secondlock",
+    "collection": "configuration"
+  },
+  "props": {
+    "mail": {
+      "host": "SMTP_HOST",
+      "email": "SMTP_EMAIL",
+      "port": 465,
+      "secure": true,
+      "password": "SMTP_PASSWD",
+      "senderName": "SMTP_SENDER_EMAIL"
+    },
+    "auth": {
+      "secret": "$as=?.@asd(12y<",
+      "lifeTime": "1h"
+    },
+    "policies": {
+      "password": "^(?=.*[a-z].*[a-z])(?=.*[A-Z].*[A-Z])(?=.*\\d.*\\d)(?=.*\\W.*\\W)[a-zA-Z0-9\\S]{9,}$",
+      "passwordDescritpion": "Password policy description",
+      "passwordDescriptionLocalized": "lbl.passwordDescriptionLocalized",
+      "maxLoginAttemps": 5,
+      "lockTime": 600000,
+      "allowOldPasswordAsNewPassword": false,
+      "enableApiEncryption": false,
+      "allowAccessByApiKeys": false,
+      "shouldAcceptEula": false,
+      "eulaURL": ""
+    },
+    "captcha": {
+      "active": true
+    },
+    "dos": {
+      "cacheTime": 3,
+      "maxCalls": 100
+    },
+    "federation": {
+      "publicFederationSerivce": ""
+    },
+    "allowedDomainsForRegistration": ["example.com"],
+    "publicApiEndpoints": [
+      "/heartbeat",
+      "/metrics",
+      "/license",
+      "/api/v1/authenticate",
+      "/api/v1/password/forgot",
+      "/api/v1/password/update",
+      "/api/v1/register",
+      "/api/v1/activation/activate",
+      "/api/v1/locale",
+      "/api/v1/captcha",
+      "/api/v1/config/load/client",
+      "/api/v1/delete/me",
+      "/api/v1/federation/user"
+    ]
+  },
+  "storageConcept": "service"
+}
