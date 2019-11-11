@@ -19,9 +19,18 @@
 
 import { Container } from "inversify";
 import { IEcoOsConfig } from "./IEcoOsConfig";
+import { IEcoConfigCollector } from "./IEcoConfigCollector";
+import { EcoConfigCollector } from "./EcoConfigCollector";
 import { EcoOsConfig } from "./EcoOsConfig";
 
 const configContainer = new Container();
 
-configContainer.bind<IEcoOsConfig>(EcoOsConfig).to(EcoOsConfig);
+configContainer
+  .bind<IEcoOsConfig>(EcoOsConfig)
+  .to(EcoOsConfig)
+  .inSingletonScope();
+configContainer
+  .bind<IEcoConfigCollector>(EcoConfigCollector)
+  .to(EcoConfigCollector)
+  .inSingletonScope();
 export { configContainer };

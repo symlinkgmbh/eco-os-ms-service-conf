@@ -20,9 +20,15 @@
 import { IEcoOsConfig } from "./IEcoOsConfig";
 import { configContainer } from "./EcoOsConfigContainer";
 import { EcoOsConfig } from "./EcoOsConfig";
+import { IEcoConfigCollector } from "./IEcoConfigCollector";
+import { EcoConfigCollector } from "./EcoConfigCollector";
 
 export class StaticEcoConfigFactory {
   public static getConfigInstance(): IEcoOsConfig {
     return configContainer.get<IEcoOsConfig>(EcoOsConfig);
+  }
+
+  public static getConfigCollectorInstance(): IEcoConfigCollector {
+    return configContainer.get<IEcoConfigCollector>(EcoConfigCollector);
   }
 }

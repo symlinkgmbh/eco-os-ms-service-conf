@@ -17,8 +17,10 @@
 
 
 
-export * from "./Heartbeat";
-export * from "./Config";
-export * from "./Metrics";
-export * from "./LicenseBeat";
-export * from "./InternalConfig";
+import { MsConf } from "@symlinkde/eco-os-pk-models";
+import { AxiosResponse } from "axios";
+
+export interface IEcoConfigCollector {
+  collectServicesConfig(): Promise<Array<MsConf.IFeatureObject>>;
+  collectServiceConfigFull(name: string): Promise<AxiosResponse>;
+}

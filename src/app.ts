@@ -25,6 +25,7 @@ import { PkCore } from "@symlinkde/eco-os-pk-models";
 import { Log, LogLevel } from "@symlinkde/eco-os-pk-log";
 import { Api } from "./api/Api";
 import { Application } from "express";
+import { redisContainer, REDIS_TYPES } from "@symlinkde/eco-os-pk-redis";
 import { StaticEcoConfigFactory } from "./infrastructure/EcoConfig/StaticEcoConfigFactory";
 
 export class Bootstrapper {
@@ -64,33 +65,24 @@ export class Bootstrapper {
     this.bootstrapper.loadGobalErrorHandler(process);
   }
 
-  public init(): Promise<Application> {
-    return new Promise((resolve, reject) => {
-      Promise.all([
-        this.checkForRequiredEnvironmentVariables(),
-        this.initLogSystem(),
-        this.loadFactorySettings(),
-        this.bootstrapper.signInServiceRegistry(),
-      ])
-        .then(() => {
-          resolve(this.api.init());
-        })
-        .catch((err) => {
-          Log.log(err, LogLevel.error);
-          reject(err);
-        });
-    });
+  public async init(): Promise<Application> {
+    try {
+      await this.checkForRequiredEnvironmentVariables();
+      this.initLogSystem();
+      await this.loadFactorySettings();
+      await this.bindRedisConfig();
+      await this.bootstrapper.signInServiceRegistry();
+      return await this.api.init();
+    } catch (err) {
+      Log.log(err, LogLevel.error);
+      process.exit(1);
+      throw new Error(err);
+    }
   }
 
-  private initLogSystem(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      try {
-        resolve(Log.log(`init ${Config.get("name")} ${Config.get("version")}`, LogLevel.info));
-      } catch (err) {
-        Log.log(err, LogLevel.error);
-        reject(err);
-      }
-    });
+  private initLogSystem(): void {
+    Log.log(`init ${Config.get("name")} ${Config.get("version")}`, LogLevel.info);
+    return;
   }
 
   private async checkForRequiredEnvironmentVariables(): Promise<void> {
@@ -168,5 +160,17 @@ export class Bootstrapper {
         }
       }
     });
+  }
+
+  private async bindRedisConfig(): Promise<void> {
+    try {
+      const redisConfig = await this.bootstrapper.exposeRedisConfig();
+      redisContainer.bind(REDIS_TYPES.REDIS_HOST).toConstantValue(redisConfig.split(":")[0]);
+      redisContainer.bind(REDIS_TYPES.REDIS_PORT).toConstantValue(redisConfig.split(":")[1]);
+      return;
+    } catch (err) {
+      Log.log(err, LogLevel.error);
+      process.exit(1);
+    }
   }
 }

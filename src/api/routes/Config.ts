@@ -23,10 +23,12 @@ import { AbstractRoutes, injectValidatorService } from "@symlinkde/eco-os-pk-api
 import { Application, Response, NextFunction } from "express";
 import { StaticEcoConfigFactory } from "../../infrastructure/EcoConfig/StaticEcoConfigFactory";
 import { IEcoOsConfig } from "../../infrastructure/EcoConfig/IEcoOsConfig";
+import { IEcoConfigCollector } from "../../infrastructure/EcoConfig/IEcoConfigCollector";
 
 @injectValidatorService
 export class ConfigRoute extends AbstractRoutes implements PkApi.IRoute {
   private config: IEcoOsConfig;
+  private configCollector: IEcoConfigCollector;
   private validatorService!: PkApi.IValidator;
   private postConfiPattern: PkApi.IValidatorPattern = {
     key: "",
@@ -36,6 +38,7 @@ export class ConfigRoute extends AbstractRoutes implements PkApi.IRoute {
   constructor(app: Application) {
     super(app);
     this.config = StaticEcoConfigFactory.getConfigInstance();
+    this.configCollector = StaticEcoConfigFactory.getConfigCollectorInstance();
     this.activate();
   }
 
@@ -46,6 +49,8 @@ export class ConfigRoute extends AbstractRoutes implements PkApi.IRoute {
     this.deleteConfig();
     this.deleteAllConfigEntries();
     this.updateConfigEntry();
+    this.getServicesConfig();
+    this.getServiceConfig();
   }
 
   private getConfig(): void {
@@ -135,6 +140,36 @@ export class ConfigRoute extends AbstractRoutes implements PkApi.IRoute {
           .updateConfigEntry(key, content)
           .then(() => {
             res.sendStatus(200);
+          })
+          .catch((err) => {
+            next(err);
+          });
+      });
+  }
+
+  private getServicesConfig(): void {
+    this.getApp()
+      .route("/services/config")
+      .get((req: MsOverride.IRequest, res: Response, next: NextFunction) => {
+        this.configCollector
+          .collectServicesConfig()
+          .then((data) => {
+            res.send(data);
+          })
+          .catch((err) => {
+            next(err);
+          });
+      });
+  }
+
+  private getServiceConfig(): void {
+    this.getApp()
+      .route("/services/config/:name")
+      .get((req: MsOverride.IRequest, res: Response, next: NextFunction) => {
+        this.configCollector
+          .collectServiceConfigFull(req.params.name)
+          .then((data) => {
+            res.send(data);
           })
           .catch((err) => {
             next(err);
