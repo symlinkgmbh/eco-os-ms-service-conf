@@ -27,6 +27,7 @@ import { Api } from "./api/Api";
 import { Application } from "express";
 import { redisContainer, REDIS_TYPES } from "@symlinkde/eco-os-pk-redis";
 import { StaticEcoConfigFactory } from "./infrastructure/EcoConfig/StaticEcoConfigFactory";
+import { StaticConfHelper } from "./infrastructure/Helper";
 
 export class Bootstrapper {
   public static getInstance(): Bootstrapper {
@@ -150,7 +151,15 @@ export class Bootstrapper {
     Object.keys(factorySettings).map(async (setting: any) => {
       Log.log(`check if entry for setting: ${setting} exists`, LogLevel.info);
       try {
-        await configStorage.setConfigEntry(setting, Config.get(`props.${setting}`));
+        if (setting === "auth") {
+          Log.log("change token secret", LogLevel.info);
+          const conf: any = Config.get(`props.${setting}`);
+          const confTemp: any = { ...conf };
+          confTemp.secret = StaticConfHelper.getRandomSecert();
+          await configStorage.setConfigEntry(setting, confTemp);
+        } else {
+          await configStorage.setConfigEntry(setting, Config.get(`props.${setting}`));
+        }
       } catch (err) {
         if (err.error && err.error.code === 816) {
           Log.log("entry alreay exists. skipp", LogLevel.info);
