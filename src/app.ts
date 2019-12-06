@@ -86,6 +86,7 @@ export class Bootstrapper {
     return;
   }
 
+  // tslint:disable-next-line:cyclomatic-complexity
   private async checkForRequiredEnvironmentVariables(): Promise<void> {
     if (!process.env.SECONDLOCK_MONGO_USER_DATA) {
       Log.log("environment variable SECONDLOCK_MONGO_USER_DATA is missing", LogLevel.error);
@@ -114,6 +115,11 @@ export class Bootstrapper {
 
     if (!process.env.SECONDLOCK_MONGO_FEDERATION_DATA) {
       Log.log("environment variable SECONDLOCK_MONGO_FEDERATION_DATA is missing", LogLevel.error);
+      process.exit(1);
+    }
+
+    if (!process.env.SECONDLOCK_MONGO_APIKEY_GROUPS) {
+      Log.log("environment variable SECONDLOCK_MONGO_APIKEY_GROUPS is missing", LogLevel.error);
       process.exit(1);
     }
 
